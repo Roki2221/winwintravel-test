@@ -1,5 +1,6 @@
 import { useTranslation } from 'react-i18next'
 
+import CloseIcon from '@/shared/assets/icons/close.svg'
 import Button from '@/shared/ui/Button/Button'
 
 type ConfirmApplyDialogProps = {
@@ -32,10 +33,13 @@ export const ConfirmApplyDialog = ({
 				<button
 					type="button"
 					aria-label="Close"
-					className="absolute right-4 top-4 text-gray-500 hover:text-gray-700"
+					className="absolute right-4 top-4"
 					onClick={onClose}
 				>
-					×
+					<CloseIcon
+						className="size-6"
+						aria-hidden="true"
+					/>
 				</button>
 
 				<h3 className="text-base font-semibold text-center text-gray-800">

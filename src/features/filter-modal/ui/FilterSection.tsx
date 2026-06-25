@@ -12,13 +12,13 @@ export const FilterSection = ({
 	onToggleOption
 }: FilterSectionProps) => {
 	return (
-		<section className="py-6 border-b border-gray-200">
-			<h2 className="text-sm font-semibold text-gray-800 mb-3">
-				{filterItem.name}
-			</h2>
-			{filterItem.description ? (
-				<p className="text-xs text-gray-500 mb-4">{filterItem.description}</p>
-			) : null}
+		<section className="py-8 border-b border-gray-200 text-[#31393C]">
+			<div className="mb-6">
+				<h3 className="font-medium text-[24px] mb-1">{filterItem.name}</h3>
+				{filterItem.description ? (
+					<p className="text-xs">{filterItem.description}</p>
+				) : null}
+			</div>
 
 			<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-3">
 				{filterItem.options.map(option => (

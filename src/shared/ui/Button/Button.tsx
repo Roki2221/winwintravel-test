@@ -11,7 +11,8 @@ const Button = ({
 		<button
 			onClick={onClick}
 			className={
-				'py-6.5 rounded-2xl text-base hover:bg-[#868483] leading-3 ' + className
+				'py-6.5 rounded-2xl text-base hover:bg-[#868483] leading-3 cursor-pointer ' +
+				className
 			}
 		>
 			{children}

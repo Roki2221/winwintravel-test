@@ -5,6 +5,7 @@ import { useFilterStore } from '@/entities/filter/model/filterStore'
 import useFilterItems from '@/features/filter-modal/model/useFilterItems'
 import { ConfirmApplyDialog } from '@/features/filter-modal/ui/ConfirmApplyDialog'
 import { FilterSection } from '@/features/filter-modal/ui/FilterSection'
+import CloseIcon from '@/shared/assets/icons/close.svg'
 import {
 	type SelectionMap,
 	searchRequestToSelectionMap,
@@ -68,7 +69,7 @@ export const FilterModal = ({ isOpen, onClose }: FilterModalProps) => {
 	}
 
 	return (
-		<div className="fixed inset-0 z-40 flex items-center justify-center">
+		<div className="fixed inset-0 z-40 flex items-center justify-center text-[#31393C]">
 			<button
 				type="button"
 				aria-label="Close"
@@ -79,21 +80,24 @@ export const FilterModal = ({ isOpen, onClose }: FilterModalProps) => {
 			<div
 				role="dialog"
 				aria-modal="true"
-				className="relative w-[min(920px,calc(100vw-32px))] h-[min(90dvh,760px)] rounded-2xl bg-white shadow-xl flex flex-col"
+				className="relative w-[min(920px,calc(100vw-32px))] h-[min(90dvh,760px)] py-10 px-8 rounded-2xl bg-white flex flex-col"
 			>
-				<header className="h-14 shrink-0 border-b border-gray-200 flex items-center justify-center relative">
-					<h2 className="text-sm font-semibold text-gray-800">{t('title')}</h2>
+				<header className=" pb-6 shrink-0 border-b border-gray-200 flex items-center justify-center relative">
+					<h2 className="font-medium text-[40px] leading-12">{t('title')}</h2>
 					<button
 						type="button"
 						aria-label="Close"
-						className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+						className="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer"
 						onClick={onClose}
 					>
-						×
+						<CloseIcon
+							className="size-6"
+							aria-hidden="true"
+						/>
 					</button>
 				</header>
 
-				<div className="flex-1 overflow-auto px-6 py-4">
+				<div className="flex-1 overflow-auto">
 					{isLoading ? <div>{t('loading')}</div> : null}
 					{isError ? <div>{t('loadError')}</div> : null}
 					{filterItems?.map(filterItem => (
@@ -108,21 +112,21 @@ export const FilterModal = ({ isOpen, onClose }: FilterModalProps) => {
 					))}
 				</div>
 
-				<footer className="shrink-0 px-6 py-4">
-					<div className="flex items-center justify-between">
-						<button
-							type="button"
-							className="text-xs text-gray-500 hover:text-gray-700 underline"
-							onClick={onClearAll}
-						>
-							{t('clearAll')}
-						</button>
+				<footer className="shrink-0 pt-8">
+					<div className="grid grid-cols-3 items-center">
 						<Button
-							className="bg-[#FF5F00] text-white hover:bg-[#e55600] px-10 py-3"
+							className="w-46 justify-self-center col-start-2 bg-[#FF5F00] text-white hover:bg-[#e55600] px-10 py-3"
 							onClick={onApply}
 						>
 							{t('apply')}
 						</Button>
+						<button
+							type="button"
+							className="justify-self-end col-start-3 text-xs text-[#078691] hover:text-[#034e55] underline cursor-pointer"
+							onClick={onClearAll}
+						>
+							{t('clearAll')}
+						</button>
 					</div>
 				</footer>
 			</div>

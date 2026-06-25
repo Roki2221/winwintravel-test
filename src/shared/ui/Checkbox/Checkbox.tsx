@@ -10,7 +10,7 @@ export const Checkbox = ({
 	onChange: (checked: boolean) => void
 }) => {
 	return (
-		<label className="flex items-center gap-2 cursor-pointer">
+		<label className="flex items-center gap-2 cursor-pointer text-[16px] font-normal">
 			<input
 				type="checkbox"
 				className={'peer hidden ' + className}
