@@ -5,5 +5,7 @@
   "clearAll": "Clear all parameters",
   "confirmTitle": "Do you want to apply new filter",
   "useOldFilter": "Use old filter",
-  "applyNewFilter": "Apply new filter"
+  "applyNewFilter": "Apply new filter",
+  "loading": "Loading...",
+  "loadError": "Error loading filters"
 }

@@ -1,0 +1,139 @@
+import { useEffect, useMemo, useState } from 'react'
+import { useTranslation } from 'react-i18next'
+
+import { useFilterStore } from '@/entities/filter/model/filterStore'
+import useFilterItems from '@/features/filter-modal/model/useFilterItems'
+import { ConfirmApplyDialog } from '@/features/filter-modal/ui/ConfirmApplyDialog'
+import { FilterSection } from '@/features/filter-modal/ui/FilterSection'
+import {
+	type SelectionMap,
+	searchRequestToSelectionMap,
+	selectionMapToSearchRequest
+} from '@/shared/lib/filterTransform'
+import Button from '@/shared/ui/Button/Button'
+
+type FilterModalProps = {
+	isOpen: boolean
+	onClose: () => void
+}
+
+export const FilterModal = ({ isOpen, onClose }: FilterModalProps) => {
+	const { data: filterItems, isLoading, isError } = useFilterItems()
+	const { t } = useTranslation('filter')
+
+	const savedFilter = useFilterStore(saved => saved.savedFilter)
+	const setSavedFilter = useFilterStore(saved => saved.setSavedFilter)
+
+	const initialDraft = useMemo(() => {
+		return searchRequestToSelectionMap(savedFilter)
+	}, [savedFilter])
+
+	const [draft, setDraft] = useState<SelectionMap>({})
+	const [isConfirmOpen, setIsConfirmOpen] = useState(false)
+
+	useEffect(() => {
+		if (!isOpen) {
+			return
+		}
+		setDraft(initialDraft)
+	}, [initialDraft, isOpen])
+
+	if (!isOpen) {
+		return null
+	}
+
+	const onClearAll = () => setDraft({})
+
+	const onToggle = (filterId: string, optionId: string, checked: boolean) => {
+		setDraft(prev => {
+			const current = prev[filterId] ?? []
+			const next = checked
+				? Array.from(new Set([...current, optionId]))
+				: current.filter(id => id !== optionId)
+			return { ...prev, [filterId]: next }
+		})
+	}
+
+	const onApply = () => setIsConfirmOpen(true)
+
+	const onUseOld = () => {
+		setIsConfirmOpen(false)
+		onClose()
+	}
+
+	const onApplyNew = () => {
+		setSavedFilter(selectionMapToSearchRequest(draft))
+		setIsConfirmOpen(false)
+		onClose()
+	}
+
+	return (
+		<div className="fixed inset-0 z-40 flex items-center justify-center">
+			<button
+				type="button"
+				aria-label="Close"
+				className="absolute inset-0 bg-black/40"
+				onClick={onClose}
+			/>
+
+			<div
+				role="dialog"
+				aria-modal="true"
+				className="relative w-[min(920px,calc(100vw-32px))] h-[min(90dvh,760px)] rounded-2xl bg-white shadow-xl flex flex-col"
+			>
+				<header className="h-14 shrink-0 border-b border-gray-200 flex items-center justify-center relative">
+					<h2 className="text-sm font-semibold text-gray-800">{t('title')}</h2>
+					<button
+						type="button"
+						aria-label="Close"
+						className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+						onClick={onClose}
+					>
+						×
+					</button>
+				</header>
+
+				<div className="flex-1 overflow-auto px-6 py-4">
+					{isLoading ? <div>{t('loading')}</div> : null}
+					{isError ? <div>{t('loadError')}</div> : null}
+					{filterItems?.map(filterItem => (
+						<FilterSection
+							key={filterItem.id}
+							filterItem={filterItem}
+							selectedOptionIds={draft[filterItem.id] ?? []}
+							onToggleOption={(optionId, checked) =>
+								onToggle(filterItem.id, optionId, checked)
+							}
+						/>
+					))}
+				</div>
+
+				<footer className="shrink-0 px-6 py-4">
+					<div className="flex items-center justify-between">
+						<button
+							type="button"
+							className="text-xs text-gray-500 hover:text-gray-700 underline"
+							onClick={onClearAll}
+						>
+							{t('clearAll')}
+						</button>
+						<Button
+							className="bg-[#FF5F00] text-white hover:bg-[#e55600] px-10 py-3"
+							onClick={onApply}
+						>
+							{t('apply')}
+						</Button>
+					</div>
+				</footer>
+			</div>
+
+			{isConfirmOpen ? (
+				<ConfirmApplyDialog
+					onClose={() => setIsConfirmOpen(false)}
+					onUseOld={onUseOld}
+					onApplyNew={onApplyNew}
+				/>
+			) : null}
+		</div>
+	)
+}
