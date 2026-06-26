@@ -9,6 +9,7 @@ const Button = ({
 }) => {
 	return (
 		<button
+			type="button"
 			onClick={onClick}
 			className={
 				'py-6.5 rounded-2xl text-base hover:bg-[#868483] leading-3 cursor-pointer ' +

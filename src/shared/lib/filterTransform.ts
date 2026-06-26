@@ -20,3 +20,41 @@ export const selectionMapToSearchRequest = (
 			optionsIds
 		}))
 }
+
+const normalizeSelectionMap = (map: SelectionMap): SelectionMap => {
+	return Object.fromEntries(
+		Object.entries(map)
+			.map(([id, optionIds]) => [id, [...optionIds].sort()])
+			.filter(([, optionIds]) => optionIds.length > 0)
+	)
+}
+
+export const areSelectionsEqual = (
+	left: SelectionMap,
+	right: SelectionMap
+): boolean => {
+	const normalizedLeft = normalizeSelectionMap(left)
+	const normalizedRight = normalizeSelectionMap(right)
+	const leftKeys = Object.keys(normalizedLeft).sort()
+	const rightKeys = Object.keys(normalizedRight).sort()
+
+	if (leftKeys.length !== rightKeys.length) {
+		return false
+	}
+
+	return leftKeys.every((key, index) => {
+		if (key !== rightKeys[index]) {
+			return false
+		}
+
+		const leftOptionIds = normalizedLeft[key]
+		const rightOptionIds = normalizedRight[key]
+
+		return (
+			leftOptionIds.length === rightOptionIds.length &&
+			leftOptionIds.every(
+				(optionId, optionIndex) => optionId === rightOptionIds[optionIndex]
+			)
+		)
+	})
+}

@@ -5,13 +5,14 @@ import { useFilterStore } from '@/entities/filter/model/filterStore'
 import useFilterItems from '@/features/filter-modal/model/useFilterItems'
 import { ConfirmApplyDialog } from '@/features/filter-modal/ui/ConfirmApplyDialog'
 import { FilterSection } from '@/features/filter-modal/ui/FilterSection'
-import CloseIcon from '@/shared/assets/icons/close.svg'
 import {
 	type SelectionMap,
+	areSelectionsEqual,
 	searchRequestToSelectionMap,
 	selectionMapToSearchRequest
 } from '@/shared/lib/filterTransform'
 import Button from '@/shared/ui/Button/Button'
+import { Modal } from '@/shared/ui/Modal/Modal'
 
 type FilterModalProps = {
 	isOpen: boolean
@@ -39,10 +40,6 @@ export const FilterModal = ({ isOpen, onClose }: FilterModalProps) => {
 		setDraft(initialDraft)
 	}, [initialDraft, isOpen])
 
-	if (!isOpen) {
-		return null
-	}
-
 	const onClearAll = () => setDraft({})
 
 	const onToggle = (filterId: string, optionId: string, checked: boolean) => {
@@ -55,7 +52,14 @@ export const FilterModal = ({ isOpen, onClose }: FilterModalProps) => {
 		})
 	}
 
-	const onApply = () => setIsConfirmOpen(true)
+	const onApply = () => {
+		if (areSelectionsEqual(draft, initialDraft)) {
+			onClose()
+			return
+		}
+
+		setIsConfirmOpen(true)
+	}
 
 	const onUseOld = () => {
 		setIsConfirmOpen(false)
@@ -69,32 +73,17 @@ export const FilterModal = ({ isOpen, onClose }: FilterModalProps) => {
 	}
 
 	return (
-		<div className="fixed inset-0 z-40 flex items-center justify-center text-[#31393C]">
-			<button
-				type="button"
-				aria-label="Close"
-				className="absolute inset-0 bg-black/40"
-				onClick={onClose}
-			/>
-
-			<div
-				role="dialog"
-				aria-modal="true"
-				className="relative w-[min(920px,calc(100vw-32px))] h-[min(90dvh,760px)] py-10 px-8 rounded-2xl bg-white flex flex-col"
+		<>
+			<Modal
+				isOpen={isOpen}
+				onClose={onClose}
+				closeOnEscape={!isConfirmOpen}
+				zIndexClassName="z-40"
+				closeButtonClassName="absolute right-1 top-3"
+				panelClassName="w-[min(920px,calc(100vw-32px))] h-[min(90dvh,760px)] py-10 px-8 flex flex-col text-[#31393C]"
 			>
-				<header className=" pb-6 shrink-0 border-b border-gray-200 flex items-center justify-center relative">
+				<header className="pb-6 shrink-0 border-b border-gray-200 flex items-center justify-center relative">
 					<h2 className="font-medium text-[40px] leading-12">{t('title')}</h2>
-					<button
-						type="button"
-						aria-label="Close"
-						className="absolute right-4 top-1/2 -translate-y-1/2 cursor-pointer"
-						onClick={onClose}
-					>
-						<CloseIcon
-							className="size-6"
-							aria-hidden="true"
-						/>
-					</button>
 				</header>
 
 				<div className="flex-1 overflow-auto">
@@ -129,7 +118,7 @@ export const FilterModal = ({ isOpen, onClose }: FilterModalProps) => {
 						</button>
 					</div>
 				</footer>
-			</div>
+			</Modal>
 
 			{isConfirmOpen ? (
 				<ConfirmApplyDialog
@@ -138,6 +127,6 @@ export const FilterModal = ({ isOpen, onClose }: FilterModalProps) => {
 					onApplyNew={onApplyNew}
 				/>
 			) : null}
-		</div>
+		</>
 	)
 }
